@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.google.protobuf") version "0.9.4"
 }
 
 android {
@@ -60,11 +61,11 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     //adding dependencies below
-    implementation ("androidx.datastore:datastore:1.0.0")
-    implementation ("com.google.protobuf:protobuf-javalite:3.18.0")
-    // ViewModel
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
-    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    // Replace direct dependencies with version catalog references
+    implementation(libs.androidx.datastore)        // Changed to catalog reference
+    implementation(libs.protobuf.javalite)         // Changed to catalog reference
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -74,4 +75,20 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
 
+}
+
+// Add this protobuf configuration block at the end
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:${libs.versions.protobuf.get()}"
+    }
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                create("java") {
+                    option("lite")
+                }
+            }
+        }
+    }
 }
